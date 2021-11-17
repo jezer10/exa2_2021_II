@@ -9,8 +9,8 @@ class UserService {
       const { username, password } = user;
       const encryptedPassword = encryptPassword(password);
       const rs = await pool.query(
-        "insert into users(username,password) values($1,$2)",
-        [username, encryptedPassword]
+        "insert into users(username,password,status) values($1,$2,$3)",
+        [username, encryptedPassword,true]
       );
 
       return 1;
@@ -18,6 +18,19 @@ class UserService {
       throw new Error(error.message);
     }
   }
+
+  async getUsers(){
+    try {
+      
+      const rs = await pool.query("select * from users");
+      
+      return rs.rows;
+
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  }
+
   async hasUser({ user }) {
     try {
       const { username, password } = user;
@@ -27,9 +40,7 @@ class UserService {
       ]);
 
       const [rsUser] = rs.rows;
-      const isEqual = comparePassword(password, rsUser.password);
-
-      return isEqual;
+      return comparePassword(password, rsUser.password);
     } catch (error) {
       throw new Error(error.message);
     }
