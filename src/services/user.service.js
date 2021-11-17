@@ -7,13 +7,13 @@ class UserService {
   async createUser({ user }) {
     try {
       const { username, password } = user;
-      const encryptedPassword = encryptPassword(password)
+      const encryptedPassword = encryptPassword(password);
       const rs = await pool.query(
         "insert into users(username,password) values($1,$2)",
         [username, encryptedPassword]
       );
 
-      return 1
+      return 1;
     } catch (error) {
       throw new Error(error.message);
     }
@@ -27,7 +27,9 @@ class UserService {
       ]);
 
       const [rsUser] = rs.rows;
-      comparePassword = 
+      const isEqual = comparePassword(password, rsUser.password);
+
+      return isEqual;
     } catch (error) {
       throw new Error(error.message);
     }
